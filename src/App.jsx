@@ -16,12 +16,19 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import MarkdownIt from 'markdown-it';
+import markdownItTaskLists from 'markdown-it-task-lists';
+import markdownItKatex from 'markdown-it-katex';
+import 'katex/dist/katex.min.css';
 import hljs from 'highlight.js';
 import { parseConversations } from './utils/parser';
 import { saveRawJson, loadRawJson, clearCachedData, getCacheSize } from './utils/storage';
 import './App.css';
 
 const md = new MarkdownIt({
+  html: true,
+  linkify: true,
+  typographer: true,
+  breaks: true,
   highlight: function (str, lang) {
     if (lang && hljs.getLanguage(lang)) {
       try {
@@ -32,7 +39,9 @@ const md = new MarkdownIt({
     }
     return ''; // use external default escaping
   }
-});
+})
+  .use(markdownItTaskLists, { label: true, labelAfter: true })
+  .use(markdownItKatex, { throwOnError: false });
 
 function formatBytes(bytes) {
   if (bytes === 0) return '0 B';
